@@ -4,7 +4,9 @@ import (
 	// "net"
 	"os"
 
+	"github.com/MousaZa/DBMS-Homework/go_backend/app"
 	"github.com/MousaZa/DBMS-Homework/go_backend/storage"
+
 	// "github.com/MousaZa/DBMS-Homework/go_backend/models"
 	"github.com/hashicorp/go-hclog"
 	"github.com/joho/godotenv"
@@ -34,7 +36,6 @@ func main() {
 		log.Error("Unable to connect to database", "error", err)
 		os.Exit(1)
 	}
-
-	log.Info("Connected to database", "db", db)
-
+	app := app.NewApp(db)
+	app.StartApp()
 }

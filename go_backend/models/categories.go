@@ -1,6 +1,6 @@
 package models
 
 type Categories struct {
-	CategoryId   int    `json:"category_id"`
-	CategoryName string `json:"category_name"`
+	CategoryId   int    `gorm:"column:category_id"`
+	CategoryName string `gorm:"column:name"`
 }

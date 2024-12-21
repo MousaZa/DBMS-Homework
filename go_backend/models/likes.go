@@ -1,7 +1,7 @@
 package models
 
 type Likes struct {
-	LikeId int `json:"like_id"`
-	UserId int `json:"user_id"`
-	BookId int `json:"book_id"`
+	LikeId int `gorm:"column:like_id"`
+	UserId int `gorm:"column:user_id"`
+	BookId int `gorm:"column:book_id"`
 }

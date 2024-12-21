@@ -1,13 +1,12 @@
 package models
 
-type Book struct {
-	BookId     int    `json:"book_id"`
-	Title      string `json:"title"`
-	Author     string `json:"author"`
-	CategoryId int    `json:"category_id"`
-	CoverUrl   string `json:"cover_url"`
-	Language   string `json:"language"`
-	Likes      int    `json:"likes"`
-	Summary    string `json:"summary"`
-	Avaliable  bool   `json:"avaliable"`
+type Books struct {
+	BookId     uint64 `json:"bookid" gorm:"column:book_id;primaryKey"`
+	Title      string `json:"title" gorm:"title"`
+	Author     string `json:"author" gorm:"author"`
+	CategoryId int    `json:"categoryid" gorm:"categoryid"`
+	Language   string `json:"language" gorm:"language"`
+	Likes      int    `json:"likes" gorm:"likes"`
+	Summary    string `json:"summary" gorm:"summary"`
+	Avaliable  bool   `json:"avaliable" gorm:"avaliable"`
 }
