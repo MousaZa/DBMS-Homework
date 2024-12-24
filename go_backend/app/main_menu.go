@@ -25,6 +25,7 @@ func (a *App) AdminMainMenu() {
 			huh.NewOption("Browse books", "browsebooks"),
 			huh.NewOption("Browse borrows", "browseborrows"),
 			huh.NewOption("Add book", "addbook"),
+			huh.NewOption("Push Notification", "pushnotification"),
 		).
 		Value(&choice).Run()
 	if choice == "browsebooks" {
@@ -36,15 +37,30 @@ func (a *App) AdminMainMenu() {
 	if choice == "addbook" {
 		a.AddBook()
 	}
+	if choice == "pushnotification" {
+		a.PushNotification()
+	}
 
 }
 
 func (a *App) UserMainMenu() {
+	var choice string
 	huh.NewSelect[string]().
 		Title("What do you want to do?").
 		Options(
-			huh.NewOption("Browse books", "browse books"),
-			huh.NewOption("Browse borrows", "browse borrows"),
+			huh.NewOption("Browse books", "browsebooks"),
+			huh.NewOption("Browse borrows", "browseborrows"),
+			huh.NewOption("Browse Notification", "browsenotification"),
 		).
-		Value(&a.page).Run()
+		Value(&choice).Run()
+	if choice == "browsebooks" {
+		a.BrowseBooks()
+	}
+	if choice == "browseborrows" {
+		a.BrowseBorrows()
+	}
+	if choice == "browsenotification" {
+		a.BrowseNotifications()
+	}
+
 }

@@ -4,6 +4,29 @@ import (
 	"github.com/MousaZa/DBMS-Homework/go_backend/models"
 )
 
+func (DB *Database) PushNotification(text string, id uint64) error {
+	return DB.DB.Exec("INSERT INTO commercial_notifications (message, user_id, status) VALUES (?, ?, ?)", text, id, "sent").Error
+
+}
+
+func (DB *Database) GetUsers() ([]models.Users, error) {
+	var users []models.Users
+	err := DB.DB.Raw("SELECT * FROM users").Scan(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (DB *Database) GetNotifications(id uint64) ([]models.CommercialNotifications, error) {
+	var not []models.CommercialNotifications
+	err := DB.DB.Raw("SELECT * FROM commercial_notifications WHERE user_id = ?", id).Scan(&not).Error
+	if err != nil {
+		return nil, err
+	}
+	return not, nil
+}
+
 func (DB *Database) GetBooks() ([]models.Books, error) {
 	var books []models.Books
 	err := DB.DB.Raw("SELECT * FROM books").Scan(&books).Error
@@ -16,6 +39,15 @@ func (DB *Database) GetBooks() ([]models.Books, error) {
 func (DB *Database) GetBorrows() ([]models.Borrows, error) {
 	var borrows []models.Borrows
 	err := DB.DB.Raw("SELECT * FROM borrows").Scan(&borrows).Error
+	if err != nil {
+		return nil, err
+	}
+	return borrows, nil
+
+}
+func (DB *Database) GetBorrowsById(id uint64) ([]models.Borrows, error) {
+	var borrows []models.Borrows
+	err := DB.DB.Raw("SELECT * FROM borrows WHERE user_id = ?", id).Scan(&borrows).Error
 	if err != nil {
 		return nil, err
 	}
