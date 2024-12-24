@@ -49,6 +49,7 @@ func (a *App) UserMainMenu() {
 		Title("What do you want to do?").
 		Options(
 			huh.NewOption("Browse books", "browsebooks"),
+			huh.NewOption("Search books", "searchbooks"),
 			huh.NewOption("Browse borrows", "browseborrows"),
 			huh.NewOption("Browse Notification", "browsenotification"),
 		).
@@ -61,6 +62,9 @@ func (a *App) UserMainMenu() {
 	}
 	if choice == "browsenotification" {
 		a.BrowseNotifications()
+	}
+	if choice == "searchbooks" {
+		a.SearchBooks()
 	}
 
 }

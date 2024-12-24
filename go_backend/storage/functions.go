@@ -1,12 +1,30 @@
 package storage
 
 import (
+	"fmt"
+
 	"github.com/MousaZa/DBMS-Homework/go_backend/models"
+	"github.com/charmbracelet/huh"
 )
 
 func (DB *Database) PushNotification(text string, id uint64) error {
 	return DB.DB.Exec("INSERT INTO commercial_notifications (message, user_id, status) VALUES (?, ?, ?)", text, id, "sent").Error
 
+}
+
+func (DB *Database) SearchBooks(search string) []huh.Option[string] {
+
+	var books []models.Books
+	q := fmt.Sprintf("SELECT * FROM books WHERE title LIKE '%%%s%%'", search)
+	err := DB.DB.Raw(q).Scan(&books).Error
+	if err != nil {
+		panic(err)
+	}
+	bookTitles := make([]huh.Option[string], len(books))
+	for i, book := range books {
+		bookTitles[i] = huh.NewOption(book.Title, book.Title)
+	}
+	return bookTitles
 }
 
 func (DB *Database) GetUsers() ([]models.Users, error) {

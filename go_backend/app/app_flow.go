@@ -11,7 +11,6 @@ import (
 type App struct {
 	currentUser *models.Users
 	db          *storage.Database
-	page        string
 	l           hclog.Logger
 }
 
