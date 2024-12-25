@@ -11,23 +11,30 @@ import (
 func (a *App) BookPage(book models.Books) {
 	fmt.Print("\033[H\033[2J")
 	var choice string
-	fmt.Println("Id: ", book.BookId)
-	fmt.Println("Title: ", book.Title)
-	fmt.Println("Author: ", book.Author)
-	fmt.Println("Summary: ", book.Summary)
-	fmt.Println("Language: ", book.Language)
-	fmt.Println("Likes: ", book.Likes)
+
+	// fmt.Println("Id: ", book.BookId)
+	// fmt.Println("Title: ", book.Title)
+	// fmt.Println("Author: ", book.Author)
+	// fmt.Println("Summary: ", book.Summary)
+	// fmt.Println("Language: ", book.Language)
+	// fmt.Println("Likes: ", book.Likes)
 
 	options := huh.NewOptions("like", "borrow", "back")
 
 	if a.currentUser.Role == "Admin" {
-		options = append(options, huh.NewOption("delete", "delete"))
+		options = append(options, huh.NewOption("Delete", "delete"))
+		options = append(options, huh.NewOption("Edit", "edit"))
 	}
-
-	huh.NewSelect[string]().
-		Options(options...).
-		Value(&choice).
-		Title("Books").Run()
+	huh.NewForm(
+		huh.NewGroup(
+			huh.NewNote().Title(book.Title).
+				Description(fmt.Sprintf("Author: %v\nSummary: %v\nLanguage: %v\nLikes: %v", book.Author, book.Summary, book.Language, book.Likes)),
+			huh.NewSelect[string]().
+				Options(options...).
+				Value(&choice).
+				Title("Options"),
+		),
+	).Run()
 	if choice == "like" {
 		a.LikeBook(book.BookId)
 	} else if choice == "borrow" {
@@ -39,6 +46,8 @@ func (a *App) BookPage(book models.Books) {
 			return
 		}
 		a.MainMenu()
+	} else if choice == "edit" {
+		a.EditBook(book)
 	} else {
 		a.MainMenu()
 	}

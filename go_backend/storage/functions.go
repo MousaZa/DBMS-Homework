@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/MousaZa/DBMS-Homework/go_backend/models"
 	"github.com/charmbracelet/huh"
@@ -12,7 +13,7 @@ func (DB *Database) PushNotification(text string, id uint64) error {
 
 }
 
-func (DB *Database) SearchBooks(search string) []huh.Option[string] {
+func (DB *Database) SearchBooks(search string) ([]huh.Option[string], map[string]models.Books) {
 
 	var books []models.Books
 	q := fmt.Sprintf("SELECT * FROM books WHERE title LIKE '%%%s%%'", search)
@@ -20,11 +21,13 @@ func (DB *Database) SearchBooks(search string) []huh.Option[string] {
 	if err != nil {
 		panic(err)
 	}
+	bookMap := make(map[string]models.Books, len(books))
 	bookTitles := make([]huh.Option[string], len(books))
 	for i, book := range books {
 		bookTitles[i] = huh.NewOption(book.Title, book.Title)
+		bookMap[book.Title] = book
 	}
-	return bookTitles
+	return bookTitles, bookMap
 }
 
 func (DB *Database) GetUsers() ([]models.Users, error) {
@@ -63,6 +66,15 @@ func (DB *Database) GetBorrows() ([]models.Borrows, error) {
 	return borrows, nil
 
 }
+func (DB *Database) GetBookById(id uint64) (models.Books, error) {
+	var book models.Books
+	err := DB.DB.Raw("SELECT * FROM books WHERE book_id = ?", id).Scan(&book).Error
+	if err != nil {
+		return models.Books{}, err
+	}
+	return book, nil
+}
+
 func (DB *Database) GetBorrowsById(id uint64) ([]models.Borrows, error) {
 	var borrows []models.Borrows
 	err := DB.DB.Raw("SELECT * FROM borrows WHERE user_id = ?", id).Scan(&borrows).Error
@@ -90,6 +102,14 @@ func (DB *Database) DeleteBook(id uint64) error {
 	return nil
 }
 
+func (DB *Database) EditBook(book models.Books) error {
+	err := DB.DB.Exec("UPDATE books SET title = ?, author = ?, summary = ?, language = ?, category_id = ? WHERE book_id = ?", book.Title, book.Author, book.Summary, book.Language, book.CategoryId, book.BookId).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (DB *Database) AddBook(book models.Books) error {
 	err := DB.DB.Exec("INSERT INTO books (title, author, summary, language, category_id) VALUES (?, ?, ?, ?, ?)", book.Title, book.Author, book.Summary, book.Language, book.CategoryId).Error
 	if err != nil {
@@ -98,6 +118,11 @@ func (DB *Database) AddBook(book models.Books) error {
 	return nil
 }
 
-func (DB *Database) BorrowBook(*models.Users, models.Books) {
-
+func (DB *Database) BorrowBook(user *models.Users, book models.Books) error {
+	d := fmt.Sprintf("%v-%v-%v", time.Now().Year(), time.Now().Month(), time.Now().Day())
+	err := DB.DB.Exec("INSERT INTO borrows (user_id, book_id, status, start_date) VALUES (?, ?, 'borrowed', ?)", user.UserId, book.BookId, d).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

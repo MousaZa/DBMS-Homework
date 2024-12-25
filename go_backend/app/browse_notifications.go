@@ -8,22 +8,30 @@ import (
 
 func (a *App) BrowseNotifications() {
 	fmt.Print("\033[H\033[2J")
-	var bookName string
-	books, err := a.db.GetNotifications(a.currentUser.UserId)
+	notifications, err := a.db.GetNotifications(a.currentUser.UserId)
 	if err != nil {
-		a.l.Error("Error getting books", "error", err)
+		a.l.Error("Error getting notifications", "error", err)
 		return
 	}
-	bookTitles := make([]huh.Option[string], len(books))
-	for i, book := range books {
-		bookTitles[i] = huh.NewOption(book.Message, book.Message)
+	// bookTitles := make([]huh.Option[string], len(notifications))
+	var n string
+	for i, notification := range notifications {
+		n = n + fmt.Sprintf("%d. %s\n", i+1, notification.Message)
 		// bookMap[book.Title] = book
 	}
-
-	huh.NewSelect[string]().
-		Options(bookTitles...).
-		Value(&bookName).
-		Title("Notifications").Run()
-
-	a.MainMenu()
+	var choice string
+	huh.NewForm(
+		huh.NewGroup(
+			huh.NewNote().
+				Description(n).
+				Title("Notifications"),
+			huh.NewSelect[string]().
+				Options(huh.NewOptions("back")...).
+				Value(&choice).
+				Title("Select"),
+		),
+	).Run()
+	if choice == "back" {
+		a.MainMenu()
+	}
 }
